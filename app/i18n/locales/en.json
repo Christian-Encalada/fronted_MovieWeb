@@ -1,0 +1,27 @@
+{
+  "common": {
+    "login": "Log in",
+    "register": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "search": "Search",
+    "all": "All",
+    "recent": "Recent",
+    "topRated": "Top Rated"
+  },
+  "nav": {
+    "byMovies": "By Movies",
+    "forYou": "For You",
+    "byGenres": "By Genres"
+  },
+  "home": {
+    "title": "Discover your next favorite movie with AI",
+    "subtitle": "Personalized recommendations based on your tastes and preferences",
+    "startNow": "Start now",
+    "seeRecommendations": "See recommendations",
+    "byMoviesDesc": "Find similar movies to your favorites",
+    "forYouDesc": "Personalized recommendations based on your tastes",
+    "byGenresDesc": "Explore the best movies by category"
+  }
+}

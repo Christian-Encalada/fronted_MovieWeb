@@ -1,0 +1,27 @@
+{
+  "common": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "email": "Email",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "search": "Buscar",
+    "all": "Todas",
+    "recent": "Recientes",
+    "topRated": "Mejor valoradas"
+  },
+  "nav": {
+    "byMovies": "Por Películas",
+    "forYou": "Para Ti",
+    "byGenres": "Por Géneros"
+  },
+  "home": {
+    "title": "Descubre tu próxima película favorita con IA",
+    "subtitle": "Recomendaciones personalizadas basadas en tus gustos y preferencias",
+    "startNow": "Comenzar ahora",
+    "seeRecommendations": "Ver recomendaciones",
+    "byMoviesDesc": "Encuentra películas similares a tus favoritas",
+    "forYouDesc": "Recomendaciones personalizadas según tus gustos",
+    "byGenresDesc": "Explora las mejores películas por categoría"
+  }
+}
