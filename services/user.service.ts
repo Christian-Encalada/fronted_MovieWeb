@@ -8,34 +8,49 @@ interface RegisterData {
 }
 
 export interface UserFavorites {
-  user_id: number;
+  favs: number[];
+}
+
+interface FavoritesResponse {
   favs: number[];
 }
 
 export const UserService = {
-  async getFavorites() {
+  async getFavorites(): Promise<UserFavorites> {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found');
       }
 
-      const response = await api.get<UserFavorites>('/users/favorites');
+      const response = await api.get<FavoritesResponse>('/users/favorites');
       return response.data;
     } catch (error) {
       console.error('Error getting favorites:', error);
-      return { user_id: 0, favs: [] };
+      return { favs: [] };
     }
   },
 
-  async addToFavorites(movieId: number) {
-    const response = await api.post('/users/favorites', { movie_id: movieId });
-    return response.data;
+  async addToFavorites(movieId: number): Promise<UserFavorites> {
+    try {
+      const response = await api.post<FavoritesResponse>('/users/favorites', {
+        movie_id: movieId
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error adding to favorites:', error);
+      throw error;
+    }
   },
 
-  async removeFromFavorites(movieId: number) {
-    const response = await api.delete(`/users/favorites/${movieId}`);
-    return response.data;
+  async removeFromFavorites(movieId: number): Promise<UserFavorites> {
+    try {
+      const response = await api.delete<FavoritesResponse>(`/users/favorites/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error removing from favorites:', error);
+      throw error;
+    }
   },
 
   async getRecommendedMovies(): Promise<Movie[]> {
@@ -49,7 +64,12 @@ export const UserService = {
   },
 
   async register(data: RegisterData) {
-    const response = await api.post('/users/register', data);
-    return response.data;
+    try {
+      const response = await api.post('/users/register', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error registering user:', error);
+      throw error;
+    }
   }
-}; 
+};

@@ -1,10 +1,17 @@
-import api from '@/lib/axios';
+import axios from 'axios';
 
 export interface Movie {
   movie_id: number;
   title: string;
   genres: string;
 }
+
+const api = axios.create({
+  baseURL: 'http://127.0.0.1:8000',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
 
 export const MovieService = {
   async getMovies(): Promise<Movie[]> {
@@ -29,10 +36,7 @@ export const MovieService = {
 
   async searchMoviesByTitle(term: string): Promise<Movie[]> {
     try {
-      if (!term || term.trim().length < 1) return [];
-      const response = await api.get<Movie[]>('/movies/search', {
-        params: { term: term.trim() }
-      });
+      const response = await api.get<Movie[]>(`/movies/search?title=${term}`);
       return response.data;
     } catch (error) {
       console.error('Error searching movies:', error);
@@ -59,4 +63,4 @@ export const MovieService = {
       return [];
     }
   }
-}; 
+};
