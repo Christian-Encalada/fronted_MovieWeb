@@ -1,4 +1,5 @@
-import { Button } from "./button";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
   currentPage: number;
@@ -7,39 +8,81 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+  const getPageNumbers = () => {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
     }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, '...');
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push('...', totalPages);
+    } else if (totalPages > 1) {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
   };
 
   return (
-    <div className="flex justify-center items-center gap-4 mt-6">
+    <nav className="flex justify-center items-center gap-1 mt-8 mb-4">
       <Button
-        onClick={handlePrevPage}
+        variant="outline"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        variant="outline"
       >
-        Anterior
+        <ChevronLeft className="h-4 w-4" />
       </Button>
-      <span className="text-sm">
-        Página {currentPage} de {totalPages}
-      </span>
+
+      <div className="flex items-center gap-1">
+        {getPageNumbers().map((page, index) => (
+          page === '...' ? (
+            <span key={`dots-${index}`} className="px-2">
+              {page}
+            </span>
+          ) : (
+            <Button
+              key={index}
+              variant={currentPage === page ? "default" : "outline"}
+              size="sm"
+              className={`h-8 w-8 ${
+                currentPage === page
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "hover:bg-accent"
+              }`}
+              onClick={() => typeof page === 'number' && onPageChange(page)}
+            >
+              {page}
+            </Button>
+          )
+        ))}
+      </div>
+
       <Button
-        onClick={handleNextPage}
-        disabled={currentPage === totalPages}
         variant="outline"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
       >
-        Siguiente
+        <ChevronRight className="h-4 w-4" />
       </Button>
-    </div>
+    </nav>
   );
 }
