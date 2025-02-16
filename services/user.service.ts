@@ -8,49 +8,34 @@ interface RegisterData {
 }
 
 export interface UserFavorites {
-  favs: number[];
-}
-
-interface FavoritesResponse {
+  user_id: number;
   favs: number[];
 }
 
 export const UserService = {
-  async getFavorites(): Promise<UserFavorites> {
+  async getFavorites() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found');
       }
 
-      const response = await api.get<FavoritesResponse>('/users/favorites');
+      const response = await api.get<UserFavorites>('/users/favorites');
       return response.data;
     } catch (error) {
       console.error('Error getting favorites:', error);
-      return { favs: [] };
+      return { user_id: 0, favs: [] };
     }
   },
 
-  async addToFavorites(movieId: number): Promise<UserFavorites> {
-    try {
-      const response = await api.post<FavoritesResponse>('/users/favorites', {
-        movie_id: movieId
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error adding to favorites:', error);
-      throw error;
-    }
+  async addToFavorites(movieId: number) {
+    const response = await api.post('/users/favorites', { movie_id: movieId });
+    return response.data;
   },
 
-  async removeFromFavorites(movieId: number): Promise<UserFavorites> {
-    try {
-      const response = await api.delete<FavoritesResponse>(`/users/favorites/${movieId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error removing from favorites:', error);
-      throw error;
-    }
+  async removeFromFavorites(movieId: number) {
+    const response = await api.delete(`/users/favorites/${movieId}`);
+    return response.data;
   },
 
   async getRecommendedMovies(): Promise<Movie[]> {
@@ -64,12 +49,7 @@ export const UserService = {
   },
 
   async register(data: RegisterData) {
-    try {
-      const response = await api.post('/users/register', data);
-      return response.data;
-    } catch (error) {
-      console.error('Error registering user:', error);
-      throw error;
-    }
+    const response = await api.post('/users/register', data);
+    return response.data;
   }
-};
+}; 

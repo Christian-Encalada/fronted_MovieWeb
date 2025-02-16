@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { LogOut, User, Star } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,10 +29,6 @@ export function DashboardNav() {
     {
       href: '/dashboard/genres',
       label: 'Por Género',
-    },
-    {
-      href: '/dashboard/favorites',
-      label: 'Favoritos',
     },
   ];
 
@@ -62,14 +58,7 @@ export function DashboardNav() {
                       : 'text-gray-700 hover:bg-gray-700 hover:text-white dark:text-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  {item.label === 'Favoritos' ? (
-                    <span className="flex items-center">
-                      <Star className="h-4 w-4 mr-1" />
-                      {item.label}
-                    </span>
-                  ) : (
-                    item.label
-                  )}
+                  {item.label}
                 </Link>
               ))}
             </div>
