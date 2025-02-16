@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -64,14 +64,22 @@ export function DashboardNav() {
             </div>
           </div>
 
-          <Button 
-            variant="ghost" 
-            onClick={handleLogout}
-            className="flex items-center space-x-2"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Cerrar Sesión</span>
-          </Button>
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/dashboard/profile"
+              className="p-2 hover:bg-gray-100 rounded-full dark:hover:bg-gray-800"
+            >
+              <User className="h-5 w-5" />
+            </Link>
+            <Button 
+              variant="ghost" 
+              onClick={handleLogout}
+              className="flex items-center space-x-2"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Cerrar Sesión</span>
+            </Button>
+          </div>
         </div>
       </div>
     </nav>
