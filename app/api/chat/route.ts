@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import { config } from '@/lib/config';
 
-const OPENROUTER_API_KEY = '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';
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 const SYSTEM_PROMPT = `Eres un experto en cine amigable y entusiasta. Al recomendar películas, sigue EXACTAMENTE este formato:
 
@@ -102,11 +103,15 @@ export async function POST(req: Request) {
     
     console.log('Mensaje del usuario:', userMessage);
 
+    if (!process.env.OPENROUTER_API_KEY) {
+      throw new Error('OPENROUTER_API_KEY no está configurada');
+    }
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'HTTP-Referer': 'http://localhost:3000',
         'X-Title': 'Movie Recommendations App'
       },

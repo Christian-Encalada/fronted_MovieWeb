@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { useAuth } from '@/hooks/use-auth';
+import { config } from './config';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: config.apiUrl,
   headers: {
     'Content-Type': 'application/json',
   }
