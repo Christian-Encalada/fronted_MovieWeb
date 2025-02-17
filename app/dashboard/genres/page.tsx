@@ -36,7 +36,6 @@ export default function GenresPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { toast } = useToast();
-  const moviesPerPage = 10;
 
   const loadMoviesByGenre = async (genreId: number, page: number = 1) => {
     setLoading(true);
@@ -54,11 +53,10 @@ export default function GenresPage() {
         throw new Error('Error al cargar películas');
       }
 
-      const movies = await response.json();
-      setMovies(movies);
-      // Asumimos 20 películas por página de TMDB
-      setTotalPages(Math.ceil(100 / moviesPerPage)); // Por ahora hardcodeamos 100 películas total
+      const data = await response.json();
+      setMovies(data);
       setCurrentPage(page);
+      setTotalPages(Math.ceil(100 / 20)); // 20 películas por página
       
     } catch (error) {
       toast({

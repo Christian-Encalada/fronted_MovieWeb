@@ -5,31 +5,18 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Heart, Home, Film, Clapperboard } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
-const routes = [
-  {
-    href: '/dashboard/for-you',
-    label: 'Para Ti',
-    icon: Home,
-  },
-  {
-    href: '/dashboard/by-movie',
-    label: 'Por Película',
-    icon: Film,
-  },
-  {
-    href: '/dashboard/genres',
-    label: 'Por Género',
-    icon: Clapperboard,
-  },
-  {
-    href: '/dashboard/favorites',
-    label: 'Favoritos',
-    icon: Heart,
-  },
-];
+interface SidebarProps {
+  navigationItems: {
+    title: string;
+    href: string;
+    icon: LucideIcon;
+    className?: string;
+  }[];
+}
 
-export function Sidebar() {
+export function Sidebar({ navigationItems }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -39,7 +26,7 @@ export function Sidebar() {
           Navegación
         </h2>
         <div className="space-y-1">
-          {routes.map((route) => (
+          {navigationItems.map((route) => (
             <Link
               key={route.href}
               href={route.href}
@@ -53,7 +40,7 @@ export function Sidebar() {
                   "h-5 w-5 mr-3",
                   pathname === route.href ? "text-primary" : "text-muted-foreground"
                 )} />
-                {route.label}
+                {route.title}
               </div>
             </Link>
           ))}
