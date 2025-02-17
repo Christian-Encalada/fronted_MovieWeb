@@ -40,15 +40,28 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await api.post('/users/login', {
-        username,
-        password,
+      const response = await fetch('http://localhost:8000/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
       });
 
-      if (response.data.access_token) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Error en el inicio de sesión');
+      }
+
+      // Guarda el token
+      localStorage.setItem('token', data.access_token);
+      console.log('Token guardado:', data.access_token); // Para debugging
+
+      if (data.access_token) {
         useAuth.getState().setAuth(
-          response.data.access_token,
-          response.data.user
+          data.access_token,
+          data.user
         );
         router.push('/dashboard/for-you');
       }

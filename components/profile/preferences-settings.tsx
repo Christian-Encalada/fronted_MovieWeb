@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 export function PreferencesSettings() {
   const genres = [
@@ -16,9 +17,12 @@ export function PreferencesSettings() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Preferencias</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Preferencias</CardTitle>
+          <Badge variant="secondary">Beta</Badge>
+        </div>
         <CardDescription>
-          Personaliza tus preferencias de películas y recomendaciones.
+          Personaliza tus preferencias de películas y recomendaciones (En desarrollo)
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -27,8 +31,8 @@ export function PreferencesSettings() {
           <div className="grid gap-4 sm:grid-cols-2">
             {genres.map((genre) => (
               <div key={genre.id} className="flex items-center space-x-2">
-                <Checkbox id={genre.id} />
-                <Label htmlFor={genre.id}>{genre.label}</Label>
+                <Checkbox id={genre.id} disabled />
+                <Label htmlFor={genre.id} className="text-muted-foreground">{genre.label}</Label>
               </div>
             ))}
           </div>

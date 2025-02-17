@@ -2,9 +2,13 @@ import api from '@/lib/axios';
 import { Movie } from './movie.service';
 
 export const FavoriteService = {
-  async getFavorites(): Promise<Movie[]> {
+  async getFavorites(skip?: number, limit?: number): Promise<Movie[]> {
     try {
-      const response = await api.get<Movie[]>('/favorites');
+      const params = new URLSearchParams();
+      if (skip !== undefined) params.append('skip', skip.toString());
+      if (limit !== undefined) params.append('limit', limit.toString());
+
+      const response = await api.get<Movie[]>('/favorites', { params });
       return response.data;
     } catch (error) {
       console.error('Error getting favorites:', error);

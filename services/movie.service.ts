@@ -1,6 +1,7 @@
 import api from '@/lib/axios';
 
 export interface Movie {
+  [x: string]: any;
   movie_id: number;
   title: string;
   genres: string;

@@ -6,85 +6,48 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
-import api from '@/lib/axios';
 import { MovieCard } from '@/components/movie-card';
-
-const ITEMS_PER_PAGE = 12; // Número de películas por página
+import { useRouter } from 'next/navigation';
 
 export default function ForYouPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const { isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
-  // Calcular películas para la página actual
-  const indexOfLastMovie = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstMovie = indexOfLastMovie - ITEMS_PER_PAGE;
-  const currentMovies = movies.slice(indexOfFirstMovie, indexOfLastMovie);
-  const totalPages = Math.ceil(movies.length / ITEMS_PER_PAGE);
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
   useEffect(() => {
-    const loadRecommendations = async () => {
-      if (!isLoading && !isAuthenticated) {
-        router.push('/login');
-        return;
-      }
-
-      if (isLoading) {
-        return;
-      }
-
+    const fetchRecommendations = async () => {
       try {
-        const { data } = await api.get<Movie[]>('/movies/recommendations/user');
-        
-        if (!Array.isArray(data)) {
-          throw new Error('Formato de datos inválido');
-        }
-        
-        setMovies(data);
-        setLoading(false);
-      } catch (error: any) {
-        let errorMessage = "No se pudieron cargar las recomendaciones";
-        if (error.response?.data?.detail) {
-          if (Array.isArray(error.response.data.detail)) {
-            errorMessage = error.response.data.detail[0]?.msg || errorMessage;
-          } else {
-            errorMessage = error.response.data.detail;
+        const response = await fetch('http://localhost:8000/movies/recommendations/user', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al obtener recomendaciones');
         }
-        
+
+        const data = await response.json();
+        setMovies(data);
+      } catch (error) {
         toast({
           title: "Error",
-          description: errorMessage,
+          description: "No se pudieron cargar las recomendaciones",
           variant: "destructive",
         });
+      } finally {
         setLoading(false);
       }
     };
 
     if (isAuthenticated) {
-      loadRecommendations();
+      fetchRecommendations();
     }
-  }, [isAuthenticated, isLoading, router, toast]);
+  }, [isAuthenticated, toast]);
 
-  if (isLoading || loading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
@@ -97,8 +60,11 @@ export default function ForYouPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p>Debes iniciar sesión para ver las recomendaciones</p>
+      <div className="flex flex-col justify-center items-center min-h-screen gap-4">
+        <p className="text-lg">Debes iniciar sesión para ver las recomendaciones</p>
+        <Button onClick={() => router.push('/login')}>
+          Iniciar Sesión
+        </Button>
       </div>
     );
   }
@@ -108,51 +74,29 @@ export default function ForYouPage() {
       <h1 className="text-2xl font-bold mb-6">Para Ti</h1>
       {movies.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground mb-4">
             No tienes preferencias aún. Agrega películas a favoritos para obtener recomendaciones personalizadas.
           </p>
           <Button 
-            className="mt-4"
             onClick={() => router.push('/dashboard/by-movie')}
+            className="mx-auto"
           >
             Explorar Películas
           </Button>
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-            {currentMovies.map((movie) => (
-              <MovieCard 
-                key={movie.movie_id} 
-                movie={movie}
-                onFavoriteChange={() => {
-                  // Opcional: Recargar las recomendaciones si es necesario
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Paginación */}
-          <div className="flex justify-center items-center gap-4 mt-6">
-            <Button
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-              variant="outline"
-            >
-              Anterior
-            </Button>
-            <span className="text-sm">
-              Página {currentPage} de {totalPages}
-            </span>
-            <Button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              variant="outline"
-            >
-              Siguiente
-            </Button>
-          </div>
-        </>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {movies.map((movie) => (
+            <MovieCard 
+              key={movie.movie_id} 
+              movie={movie}
+              onFavoriteChange={() => {
+                // Recargar recomendaciones cuando cambian los favoritos
+                router.refresh();
+              }}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

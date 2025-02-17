@@ -1,17 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Movie } from '@/services/movie.service';
-import { FavoriteService } from '@/services/favorite.service';
 import { MovieCard } from '@/components/movie-card';
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { FavoriteService } from '@/services/favorite.service';
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const { toast } = useToast();
 
@@ -28,27 +27,10 @@ export default function FavoritesPage() {
       toast({
         title: "Error",
         description: "No se pudieron cargar los favoritos",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleClearFavorites = async () => {
-    try {
-      await FavoriteService.clearFavorites();
-      setFavorites([]);
-      toast({
-        title: "Éxito",
-        description: "Se han eliminado todos los favoritos",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudieron eliminar los favoritos",
-        variant: "destructive"
-      });
     }
   };
 
@@ -56,48 +38,44 @@ export default function FavoritesPage() {
     loadFavorites();
   }, []);
 
+  const handleLoadMore = () => {
+    setCurrentPage(prev => prev + 1);
+    loadFavorites(currentPage + 1);
+  };
+
   if (loading) {
-    return <div>Cargando favoritos...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Mis Favoritos</h1>
-        {favorites.length > 0 && (
-          <Button 
-            variant="destructive" 
-            onClick={handleClearFavorites}
-            className="flex items-center gap-2"
-          >
-            <Trash2 className="h-4 w-4" />
-            Limpiar favoritos
-          </Button>
-        )}
-      </div>
-
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Mis Favoritos</h1>
+      
       {favorites.length === 0 ? (
-        <p>No tienes películas favoritas aún.</p>
+        <div className="text-center py-8">
+          <p className="text-lg text-muted-foreground">
+            No tienes películas favoritas aún
+          </p>
+        </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {favorites.map((movie) => (
               <MovieCard 
                 key={movie.movie_id} 
-                movie={movie} 
-                onFavoriteChange={() => loadFavorites(0)}
+                movie={movie}
+                onFavoriteChange={() => loadFavorites()}
               />
             ))}
           </div>
 
           {hasMore && (
-            <div className="flex justify-center mt-4">
-              <Button
-                onClick={() => {
-                  setPage(prev => prev + 1);
-                  loadFavorites(page + 1);
-                }}
-              >
+            <div className="flex justify-center mt-8">
+              <Button onClick={handleLoadMore}>
                 Cargar más
               </Button>
             </div>

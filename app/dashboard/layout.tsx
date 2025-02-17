@@ -1,5 +1,8 @@
+'use client';
+
 import { redirect } from 'next/navigation';
-import { DashboardNav } from '@/components/dashboard-nav';
+import { Sidebar } from '@/components/dashboard/sidebar';
+import { TopBar } from '@/components/dashboard/top-bar';
 
 export default function DashboardLayout({
   children,
@@ -12,11 +15,18 @@ export default function DashboardLayout({
   }
 
   return (
-    <div>
-      <DashboardNav />
-      <main className="container mx-auto p-4">
-        {children}
-      </main>
+    <div className="min-h-screen bg-background">
+      <TopBar />
+      <div className="flex h-[calc(100vh-4rem)]">
+        <div className="hidden md:block w-64 fixed h-[calc(100vh-4rem)]">
+          <Sidebar />
+        </div>
+        <main className="md:pl-64 flex-1 overflow-y-auto">
+          <div className="container mx-auto p-4">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
