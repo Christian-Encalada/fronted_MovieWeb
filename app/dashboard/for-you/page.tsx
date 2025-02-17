@@ -7,23 +7,34 @@ import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/hooks/use-auth';
 import { MovieCard } from '@/components/movie-card';
+import { MovieCardSkeleton } from '@/components/ui/movie-card-skeleton';
 import { useRouter } from 'next/navigation';
 
 export default function ForYouPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
+        const token = localStorage.getItem('token'); // Obtén el token directamente
+        console.log("Token en frontend:", token?.substring(0, 20)); // Debug
+
         const response = await fetch('http://localhost:8000/movies/recommendations/user', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
         });
+
+        if (response.status === 401) {
+          console.log("Error de autenticación"); // Debug
+          router.push('/login');
+          return;
+        }
 
         if (!response.ok) {
           throw new Error('Error al obtener recomendaciones');
@@ -32,6 +43,7 @@ export default function ForYouPage() {
         const data = await response.json();
         setMovies(data);
       } catch (error) {
+        console.error('Error completo:', error);
         toast({
           title: "Error",
           description: "No se pudieron cargar las recomendaciones",
@@ -45,7 +57,7 @@ export default function ForYouPage() {
     if (isAuthenticated) {
       fetchRecommendations();
     }
-  }, [isAuthenticated, toast]);
+  }, [isAuthenticated, toast, router]);
 
   if (loading) {
     return (
