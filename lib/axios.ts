@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { useAuth } from '@/hooks/use-auth';
 
 const api = axios.create({
   baseURL: 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
-  },
+  }
 });
 
 // Interceptor para agregar el token
@@ -25,10 +26,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('Error en la petición:', {
-      status: error.response?.status,
-      data: error.response?.data
-    });
+    if (error.response?.status === 401) {
+      useAuth.getState().logout();
+    }
     return Promise.reject(error);
   }
 );

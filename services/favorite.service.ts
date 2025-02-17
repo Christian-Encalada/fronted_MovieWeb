@@ -1,24 +1,54 @@
 import api from '@/lib/axios';
-
-export interface FavoriteMovie {
-  movie_id: number;
-  user_id: number;
-}
+import { Movie } from './movie.service';
 
 export const FavoriteService = {
-  addToFavorites: async (movieId: number) => {
-    return await api.post('/favorites', { movie_id: movieId });
+  async getFavorites(): Promise<Movie[]> {
+    try {
+      const response = await api.get<Movie[]>('/favorites');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting favorites:', error);
+      return [];
+    }
   },
 
-  removeFromFavorites: async (movieId: number) => {
-    return await api.delete(`/favorites/${movieId}`);
+  async addToFavorites(movieId: number) {
+    try {
+      const response = await api.post(`/favorites/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding to favorites:', error);
+      throw error;
+    }
   },
 
-  getFavorites: async () => {
-    return await api.get('/favorites');
+  async removeFromFavorites(movieId: number) {
+    try {
+      const response = await api.delete(`/favorites/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error removing from favorites:', error);
+      throw error;
+    }
   },
 
-  isFavorite: async (movieId: number) => {
-    return await api.get(`/favorites/${movieId}`);
+  async checkFavorite(movieId: number) {
+    try {
+      const response = await api.get(`/favorites/check/${movieId}`);
+      return response.data.isFavorite;
+    } catch (error) {
+      console.error('Error checking favorite:', error);
+      return false;
+    }
+  },
+
+  async clearFavorites(): Promise<boolean> {
+    try {
+      await api.delete('/favorites');
+      return true;
+    } catch (error) {
+      console.error('Error clearing favorites:', error);
+      throw error;
+    }
   }
 }; 

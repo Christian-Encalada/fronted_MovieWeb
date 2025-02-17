@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star } from 'lucide-react';
+import { Star, StarOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Movie } from '@/services/movie.service';
 import { FavoriteService } from '@/services/favorite.service';
@@ -23,13 +23,8 @@ export function MovieCard({ movie, onFavoriteChange }: MovieCardProps) {
   useEffect(() => {
     const checkFavoriteStatus = async () => {
       if (!isAuthenticated) return;
-      
-      try {
-        const response = await FavoriteService.isFavorite(movie.movie_id);
-        setIsFavorite(response.data.isFavorite);
-      } catch (error) {
-        console.error('Error checking favorite status:', error);
-      }
+      const status = await FavoriteService.checkFavorite(movie.movie_id);
+      setIsFavorite(status);
     };
 
     checkFavoriteStatus();
@@ -64,10 +59,10 @@ export function MovieCard({ movie, onFavoriteChange }: MovieCardProps) {
       if (onFavoriteChange) {
         onFavoriteChange();
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Error al actualizar favoritos",
+        description: error.response?.data?.detail || "Error al actualizar favoritos",
         variant: "destructive",
       });
     } finally {
@@ -88,14 +83,11 @@ export function MovieCard({ movie, onFavoriteChange }: MovieCardProps) {
           isLoading && "opacity-50 cursor-not-allowed"
         )}
       >
-        <Star
-          className={cn(
-            "h-5 w-5 transition-all duration-300 ease-in-out",
-            isFavorite 
-              ? "fill-yellow-400 text-yellow-400 scale-110"
-              : "text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400"
-          )}
-        />
+        {isFavorite ? (
+          <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+        ) : (
+          <StarOff className="h-5 w-5 text-gray-400 hover:text-yellow-400 dark:text-gray-500 dark:hover:text-yellow-400" />
+        )}
       </button>
       <CardHeader>
         <CardTitle>{movie.title}</CardTitle>

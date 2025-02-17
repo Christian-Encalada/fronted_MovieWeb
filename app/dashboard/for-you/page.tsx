@@ -107,7 +107,17 @@ export default function ForYouPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Para Ti</h1>
       {movies.length === 0 ? (
-        <p>No hay recomendaciones disponibles en este momento.</p>
+        <div className="text-center py-8">
+          <p className="text-lg text-muted-foreground">
+            No tienes preferencias aún. Agrega películas a favoritos para obtener recomendaciones personalizadas.
+          </p>
+          <Button 
+            className="mt-4"
+            onClick={() => router.push('/dashboard/by-movie')}
+          >
+            Explorar Películas
+          </Button>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">

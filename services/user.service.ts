@@ -26,11 +26,6 @@ interface UpdatePasswordData {
 export const UserService = {
   async getFavorites() {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
-
       const response = await api.get<UserFavorites>('/users/favorites');
       return response.data;
     } catch (error) {
@@ -39,14 +34,34 @@ export const UserService = {
     }
   },
 
+  async checkFavorite(movieId: number) {
+    try {
+      const response = await api.get(`/users/favorites/${movieId}/check`);
+      return response.data;
+    } catch (error) {
+      console.error('Error checking favorite:', error);
+      return false;
+    }
+  },
+
   async addToFavorites(movieId: number) {
-    const response = await api.post('/users/favorites', { movie_id: movieId });
-    return response.data;
+    try {
+      const response = await api.post(`/users/favorites/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding to favorites:', error);
+      throw error;
+    }
   },
 
   async removeFromFavorites(movieId: number) {
-    const response = await api.delete(`/users/favorites/${movieId}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/users/favorites/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error removing from favorites:', error);
+      throw error;
+    }
   },
 
   async getRecommendedMovies(): Promise<Movie[]> {
@@ -70,21 +85,11 @@ export const UserService = {
 
   updatePassword: async (data: UpdatePasswordData) => {
     try {
-      const response = await api.put('/users/password', {
-        current_password: data.current_password,
-        new_password: data.new_password,
-        confirm_password: data.confirm_password
-      });
-      
-      if (response.data.message) {
-        return response.data;
-      }
-      throw new Error('Respuesta inválida del servidor');
+      const response = await api.put('/users/password', data);
+      return response.data;
     } catch (error: any) {
-      if (error.response?.data?.detail) {
-        throw new Error(error.response.data.detail);
-      }
-      throw new Error('Error al actualizar la contraseña');
+      const message = error.response?.data?.detail || 'Error al actualizar la contraseña';
+      throw new Error(message);
     }
   },
 
