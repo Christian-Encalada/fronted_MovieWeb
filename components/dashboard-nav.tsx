@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Film, List, Star } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,21 +15,25 @@ export function DashboardNav() {
 
   const navItems = [
     {
-      href: '/dashboard',
-      label: 'Películas',
-    },
-    {
       href: '/dashboard/for-you',
       label: 'Para Ti',
+      icon: <User className="h-4 w-4" />
     },
     {
       href: '/dashboard/by-movie',
       label: 'Por Película',
+      icon: <Film className="h-4 w-4" />
     },
     {
       href: '/dashboard/genres',
       label: 'Por Género',
+      icon: <List className="h-4 w-4" />
     },
+    {
+      href: '/dashboard/favorites',
+      label: 'Favoritos',
+      icon: <Star className="h-4 w-4" />
+    }
   ];
 
   const handleLogout = () => {
@@ -46,7 +50,7 @@ export function DashboardNav() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <div className="text-xl font-bold">CineAI</div>
+            <Link href="/dashboard/for-you" className="text-xl font-bold">CineXpress</Link>
             <div className="ml-8 flex space-x-4">
               {navItems.map((item) => (
                 <Link

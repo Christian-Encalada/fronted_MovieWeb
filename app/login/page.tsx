@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -25,25 +25,50 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
   const { toast } = useToast();
+  const theme = useAuth((state) => state.theme);
+
+  useEffect(() => {
+    // Solo limpiar token y user, mantener el tema
+    const theme = localStorage.getItem('theme');
+    localStorage.clear();
+    if (theme) localStorage.setItem('theme', theme);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await api.post('/users/login', {
-        username,
-        password,
+      const response = await fetch('http://localhost:8000/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
       });
 
-      await login(response.data.access_token, response.data.user);
-      router.push('/dashboard');
-    } catch (error: any) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Error en el inicio de sesión');
+      }
+
+      // Guarda el token
+      localStorage.setItem('token', data.access_token);
+      console.log('Token guardado:', data.access_token); // Para debugging
+
+      if (data.access_token) {
+        useAuth.getState().setAuth(
+          data.access_token,
+          data.user
+        );
+        router.push('/dashboard/for-you');
+      }
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Error al iniciar sesión",
+        description: "Usuario o contraseña incorrectos",
         variant: "destructive",
       });
     } finally {
@@ -52,7 +77,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800">
+    <div className={`flex items-center justify-center min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

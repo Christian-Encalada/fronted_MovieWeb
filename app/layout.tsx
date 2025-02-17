@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CineAI - Recomendaciones de Películas',
+  title: 'CineXpress - Recomendaciones de Películas',
   description: 'Tu plataforma de recomendaciones de películas con IA',
 };
 

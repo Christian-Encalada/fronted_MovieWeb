@@ -18,8 +18,8 @@ export default function ProfilePage() {
   const tabs = [
     { id: "info", label: "Información Personal", icon: User, component: ProfileInfo },
     { id: "security", label: "Seguridad", icon: Lock, component: SecuritySettings },
-    { id: "preferences", label: "Preferencias", icon: Settings, component: PreferencesSettings },
-    { id: "notifications", label: "Notificaciones", icon: Bell, component: NotificationSettings },
+    { id: "preferences", label: "Preferencias (proximamente)", icon: Settings, component: PreferencesSettings },
+    { id: "notifications", label: "Notificaciones (proximamente)", icon: Bell, component: NotificationSettings },
   ];
 
   const CurrentComponent = tabs.find(tab => tab.id === activeTab)?.component || ProfileInfo;

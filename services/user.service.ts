@@ -12,14 +12,20 @@ export interface UserFavorites {
   favs: number[];
 }
 
+interface UpdateProfileData {
+  username?: string;
+  email?: string;
+}
+
+interface UpdatePasswordData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
 export const UserService = {
   async getFavorites() {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
-
       const response = await api.get<UserFavorites>('/users/favorites');
       return response.data;
     } catch (error) {
@@ -28,14 +34,34 @@ export const UserService = {
     }
   },
 
+  async checkFavorite(movieId: number) {
+    try {
+      const response = await api.get(`/users/favorites/${movieId}/check`);
+      return response.data;
+    } catch (error) {
+      console.error('Error checking favorite:', error);
+      return false;
+    }
+  },
+
   async addToFavorites(movieId: number) {
-    const response = await api.post('/users/favorites', { movie_id: movieId });
-    return response.data;
+    try {
+      const response = await api.post(`/users/favorites/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding to favorites:', error);
+      throw error;
+    }
   },
 
   async removeFromFavorites(movieId: number) {
-    const response = await api.delete(`/users/favorites/${movieId}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/users/favorites/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error removing from favorites:', error);
+      throw error;
+    }
   },
 
   async getRecommendedMovies(): Promise<Movie[]> {
@@ -51,5 +77,23 @@ export const UserService = {
   async register(data: RegisterData) {
     const response = await api.post('/users/register', data);
     return response.data;
+  },
+
+  updateProfile: async (data: UpdateProfileData) => {
+    return await api.put('/users/profile', data);
+  },
+
+  updatePassword: async (data: UpdatePasswordData) => {
+    try {
+      const response = await api.put('/users/password', data);
+      return response.data;
+    } catch (error: any) {
+      const message = error.response?.data?.detail || 'Error al actualizar la contraseña';
+      throw new Error(message);
+    }
+  },
+
+  getProfile: async () => {
+    return await api.get('/users/profile');
   }
 }; 

@@ -1,10 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: { unoptimized: true },
+  images: {
+    domains: ['image.tmdb.org'],
+    unoptimized: true,
+  },
+  env: {
+    DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
+    TMDB_API_KEY: process.env.TMDB_API_KEY,
+  },
 };
 
 module.exports = nextConfig;

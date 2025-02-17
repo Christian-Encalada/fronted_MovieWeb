@@ -2,90 +2,92 @@
 
 import { useEffect, useState } from 'react';
 import { Movie } from '@/services/movie.service';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import api from '@/lib/axios';
+import { useParams } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
+import { MovieHeader } from '@/components/page-movie/movie-header';
+import { MoviePoster } from '@/components/page-movie/movie-poster';
+import { MovieInfo } from '@/components/page-movie/movie-info';
+import { FavoriteService } from '@/services/favorite.service';
+import { SimilarMovies } from '@/components/page-movie/similar-movies';
 
-export default function MoviePage({ params }: { params: { id: string } }) {
+export default function MovieDetailPage() {
   const [movie, setMovie] = useState<Movie | null>(null);
-  const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const params = useParams();
+  const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const loadMovie = async () => {
+    const fetchMovieDetails = async () => {
       try {
-        // Cargar película principal
-        const { data: movieData } = await api.get<Movie>(`/movies/${params.id}`);
-        setMovie(movieData);
+        const response = await fetch(`http://localhost:8000/movies/${params.id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
 
-        // Cargar películas similares
-        const { data: similarData } = await api.get<Movie[]>(`/movies/${params.id}/similar`);
-        setSimilarMovies(similarData);
+        if (!response.ok) {
+          throw new Error('Error al obtener detalles de la película');
+        }
+
+        const data = await response.json();
+        setMovie(data);
+
+        if (isAuthenticated) {
+          const favoriteStatus = await FavoriteService.checkFavorite(data.movie_id);
+          setIsFavorite(favoriteStatus);
+        }
       } catch (error) {
-        console.error('Error loading movie:', error);
+        toast({
+          title: "Error",
+          description: "No se pudo cargar la información de la película",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    loadMovie();
-  }, [params.id]);
+    fetchMovieDetails();
+  }, [params.id, isAuthenticated, toast]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p>Cargando película...</p>
-        </div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
       </div>
     );
   }
 
   if (!movie) {
     return (
-      <div className="container mx-auto p-4">
-        <p className="text-center">Película no encontrada</p>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <p>No se encontró la película</p>
+        <MovieHeader />
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-4">
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-2xl">{movie.title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {movie.genres.split('|').map((genre) => (
-              <Badge key={genre} variant="secondary" className="text-sm">
-                {genre.trim()}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <MovieHeader />
 
-      <h2 className="text-xl font-bold mb-4">Películas Similares</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {similarMovies.map((similar) => (
-          <Card key={similar.movie_id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-lg">{similar.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1">
-                {similar.genres.split('|').map((genre) => (
-                  <Badge key={genre} variant="outline" className="text-xs">
-                    {genre.trim()}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <MoviePoster 
+          posterPath={movie.poster_path} 
+          title={movie.title} 
+        />
+        <MovieInfo 
+          movie={movie}
+          isFavorite={isFavorite}
+          onFavoriteChange={setIsFavorite}
+          isAuthenticated={isAuthenticated}
+        />
       </div>
+
+      <SimilarMovies movieId={movie.movie_id} />
     </div>
   );
 } 
