@@ -10,6 +10,15 @@ interface User {
   email: string;
 }
 
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (token: string, user: User) => void;
+  logout: () => void;
+  updateUser: (user: User) => void;
+}
+
 export function useAuth() {
   const router = useRouter();
   const { toast } = useToast();
@@ -88,6 +97,10 @@ export function useAuth() {
     router.push('/login');
   }, [router]);
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+  };
+
   return {
     isAuthenticated,
     isLoading,
@@ -95,6 +108,7 @@ export function useAuth() {
     user,
     login,
     logout,
-    checkAuth
+    checkAuth,
+    updateUser
   };
 }

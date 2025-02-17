@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/axios';
+import { MovieCard } from '@/components/movie-card';
 
 const ITEMS_PER_PAGE = 12; // Número de películas por página
 
@@ -111,16 +112,13 @@ export default function ForYouPage() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
             {currentMovies.map((movie) => (
-              <Card key={movie.movie_id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle>{movie.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {movie.genres.split('|').join(', ')}
-                  </p>
-                </CardContent>
-              </Card>
+              <MovieCard 
+                key={movie.movie_id} 
+                movie={movie}
+                onFavoriteChange={() => {
+                  // Opcional: Recargar las recomendaciones si es necesario
+                }}
+              />
             ))}
           </div>
 

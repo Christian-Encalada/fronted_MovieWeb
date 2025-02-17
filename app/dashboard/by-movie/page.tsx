@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Movie, MovieService } from '@/services/movie.service';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { MovieCard } from '@/components/movie-card';
 
 export default function ByMoviePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,7 +43,9 @@ export default function ByMoviePage() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <div className="relative">
+      <h1 className="text-2xl font-bold mb-6 text-center">Buscar Películas Similares</h1>
+      
+      <div className="relative max-w-2xl mx-auto">
         <Input
           type="text"
           placeholder="Buscar película..."
@@ -69,45 +70,32 @@ export default function ByMoviePage() {
       </div>
 
       {selectedMovie && (
-        <div className="space-y-6">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold">{selectedMovie.title}</CardTitle>
-              <CardDescription className="text-sm text-gray-600">{selectedMovie.genres}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {selectedMovie.genres.split('|').map((genre) => (
-                  <Badge key={genre} variant="secondary" className="text-sm">
-                    {genre.trim()}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        <div className="space-y-6 max-w-6xl mx-auto">
+          <div className="mb-8">
+            <MovieCard 
+              movie={selectedMovie}
+              onFavoriteChange={() => {
+                // Opcional: Actualizar estado si es necesario
+              }}
+            />
+          </div>
 
           <div>
             <h2 className="text-xl font-bold mb-4">Películas Similares</h2>
             {loading ? (
-              <div>Cargando recomendaciones...</div>
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {similarMovies.map((movie) => (
-                  <Card key={movie.movie_id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-lg font-bold">{movie.title}</CardTitle>
-                      <CardDescription className="text-sm text-gray-600">{movie.genres}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {movie.genres.split('|').map((genre) => (
-                          <Badge key={genre} variant="secondary" className="text-sm">
-                            {genre.trim()}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <MovieCard 
+                    key={movie.movie_id} 
+                    movie={movie}
+                    onFavoriteChange={() => {
+                      // Opcional: Recargar las películas similares si es necesario
+                    }}
+                  />
                 ))}
               </div>
             )}

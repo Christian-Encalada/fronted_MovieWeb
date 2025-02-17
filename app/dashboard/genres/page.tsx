@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Pagination } from '@/components/ui/pagination';
 import { Badge } from '@/components/ui/badge';
 import api from '@/lib/axios';
+import { MovieCard } from '@/components/movie-card';
 
 const ITEMS_PER_PAGE = 12;
 const GENRES = [
@@ -83,20 +84,13 @@ export default function GenresPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
             {(currentItems as Movie[]).map((movie) => (
-              <Card key={movie.movie_id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-lg">{movie.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-1">
-                    {movie.genres.split('|').map((genre) => (
-                      <Badge key={genre} variant="outline" className="text-xs">
-                        {genre.trim()}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <MovieCard 
+                key={movie.movie_id} 
+                movie={movie}
+                onFavoriteChange={() => {
+                  // Opcional: Recargar las películas del género si es necesario
+                }}
+              />
             ))}
           </div>
         </>

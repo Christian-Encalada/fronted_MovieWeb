@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import api from '@/lib/axios';
 import { motion } from 'framer-motion';
+import { MovieCard } from '@/components/movie-card';
 
 export default function MovieSearchPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -74,38 +75,23 @@ export default function MovieSearchPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>{movie.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {movie.genres.split('|').map((genre) => (
-                    <Badge key={genre} variant="secondary">
-                      {genre.trim()}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <MovieCard 
+              movie={movie}
+              onFavoriteChange={() => {
+                // Opcional: Actualizar estado si es necesario
+              }}
+            />
 
             <h2 className="text-xl font-bold mb-4">Películas Similares</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {similarMovies.map((similar) => (
-                <Card key={similar.movie_id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{similar.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-1">
-                      {similar.genres.split('|').map((genre) => (
-                        <Badge key={genre} variant="outline" className="text-xs">
-                          {genre.trim()}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <MovieCard 
+                  key={similar.movie_id} 
+                  movie={similar}
+                  onFavoriteChange={() => {
+                    // Opcional: Recargar las películas similares si es necesario
+                  }}
+                />
               ))}
             </div>
           </motion.div>

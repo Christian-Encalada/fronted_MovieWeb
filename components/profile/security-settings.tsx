@@ -3,50 +3,50 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { UserService } from "@/services/user.service";
 
 export function SecuritySettings() {
-  const [showPasswordChange, setShowPasswordChange] = useState(false);
-  const [passwords, setPasswords] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const [formData, setFormData] = useState({
+    current_password: '',
+    new_password: '',
+    confirm_password: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (passwords.newPassword !== passwords.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Las contraseñas no coinciden",
-        variant: "destructive",
-      });
-      return;
-    }
+    setIsLoading(true);
 
     try {
-      // Aquí iría la lógica para cambiar la contraseña
+      const result = await UserService.updatePassword({
+        current_password: formData.current_password,
+        new_password: formData.new_password,
+        confirm_password: formData.confirm_password
+      });
+
       toast({
         title: "Éxito",
-        description: "Contraseña actualizada correctamente",
+        description: result.message || "Contraseña actualizada correctamente",
       });
-      setShowPasswordChange(false);
-      setPasswords({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+
+      // Limpiar el formulario
+      setFormData({
+        current_password: '',
+        new_password: '',
+        confirm_password: '',
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "No se pudo actualizar la contraseña",
+        description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,70 +59,46 @@ export function SecuritySettings() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!showPasswordChange ? (
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <h4 className="text-sm font-medium">Contraseña</h4>
-                <p className="text-sm text-muted-foreground">
-                  Cambia tu contraseña para mantener tu cuenta segura
-                </p>
-              </div>
-              <Button onClick={() => setShowPasswordChange(true)}>
-                Cambiar contraseña
-              </Button>
+            <div className="space-y-2">
+              <Label htmlFor="current_password">Contraseña actual</Label>
+              <Input
+                id="current_password"
+                type="password"
+                value={formData.current_password}
+                onChange={(e) => setFormData(prev => ({ ...prev, current_password: e.target.value }))}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="new_password">Nueva contraseña</Label>
+              <Input
+                id="new_password"
+                type="password"
+                value={formData.new_password}
+                onChange={(e) => setFormData(prev => ({ ...prev, new_password: e.target.value }))}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirm_password">Confirmar nueva contraseña</Label>
+              <Input
+                id="confirm_password"
+                type="password"
+                value={formData.confirm_password}
+                onChange={(e) => setFormData(prev => ({ ...prev, confirm_password: e.target.value }))}
+                required
+              />
             </div>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Contraseña actual</label>
-              <Input
-                type="password"
-                value={passwords.currentPassword}
-                onChange={(e) => setPasswords(prev => ({
-                  ...prev,
-                  currentPassword: e.target.value
-                }))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Nueva contraseña</label>
-              <Input
-                type="password"
-                value={passwords.newPassword}
-                onChange={(e) => setPasswords(prev => ({
-                  ...prev,
-                  newPassword: e.target.value
-                }))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Confirmar nueva contraseña</label>
-              <Input
-                type="password"
-                value={passwords.confirmPassword}
-                onChange={(e) => setPasswords(prev => ({
-                  ...prev,
-                  confirmPassword: e.target.value
-                }))}
-              />
-            </div>
-            
-            <div className="flex space-x-2">
-              <Button type="submit">Guardar cambios</Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setShowPasswordChange(false)}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </form>
-        )}
+
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Actualizando..." : "Cambiar contraseña"}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

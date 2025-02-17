@@ -4,15 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { UserService } from "@/services/user.service";
 
 export function ProfileInfo() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { toast } = useToast();
-  const [isEditing, setIsEditing] = useState(false);
-  const [newUsername, setNewUsername] = useState(user?.username || '');
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    username: user?.username || '',
+    email: user?.email || '',
+  });
 
   // Función para formatear la fecha consistentemente
   const formatDate = () => {
@@ -27,21 +32,25 @@ export function ProfileInfo() {
   // Memoizar la fecha para evitar re-renders
   const formattedDate = useState(formatDate())[0];
 
-  const handleUsernameChange = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
-      // Aquí iría la lógica para actualizar el nombre de usuario
+      const response = await UserService.updateProfile(formData);
+      updateUser(response.data);
       toast({
-        title: "Éxito",
-        description: "Nombre de usuario actualizado correctamente",
+        title: "Perfil actualizado",
+        description: "Tu información ha sido actualizada exitosamente",
       });
-      setIsEditing(false);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "No se pudo actualizar el nombre de usuario",
+        description: error.response?.data?.detail || "Error al actualizar el perfil",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,23 +69,6 @@ export function ProfileInfo() {
               <AvatarImage src="/placeholder-avatar.jpg" />
               <AvatarFallback>{user?.username?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-            {!isEditing ? (
-              <Button variant="outline" onClick={() => setIsEditing(true)}>
-                Cambiar nombre de usuario
-              </Button>
-            ) : (
-              <form onSubmit={handleUsernameChange} className="flex space-x-2">
-                <Input
-                  value={newUsername}
-                  onChange={(e) => setNewUsername(e.target.value)}
-                  placeholder="Nuevo nombre de usuario"
-                />
-                <Button type="submit">Guardar</Button>
-                <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancelar
-                </Button>
-              </form>
-            )}
           </div>
           
           <div className="grid gap-4">
@@ -97,6 +89,45 @@ export function ProfileInfo() {
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Editar Información</CardTitle>
+          <CardDescription>
+            Actualiza tu información personal
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Nombre de usuario</Label>
+                <Input
+                  id="username"
+                  value={formData.username}
+                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                  placeholder="Tu nombre de usuario"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Correo electrónico</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="tu@email.com"
+                />
+              </div>
+            </div>
+
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Actualizando..." : "Guardar cambios"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

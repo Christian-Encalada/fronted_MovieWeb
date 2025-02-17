@@ -12,6 +12,17 @@ export interface UserFavorites {
   favs: number[];
 }
 
+interface UpdateProfileData {
+  username?: string;
+  email?: string;
+}
+
+interface UpdatePasswordData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
 export const UserService = {
   async getFavorites() {
     try {
@@ -51,5 +62,33 @@ export const UserService = {
   async register(data: RegisterData) {
     const response = await api.post('/users/register', data);
     return response.data;
+  },
+
+  updateProfile: async (data: UpdateProfileData) => {
+    return await api.put('/users/profile', data);
+  },
+
+  updatePassword: async (data: UpdatePasswordData) => {
+    try {
+      const response = await api.put('/users/password', {
+        current_password: data.current_password,
+        new_password: data.new_password,
+        confirm_password: data.confirm_password
+      });
+      
+      if (response.data.message) {
+        return response.data;
+      }
+      throw new Error('Respuesta inválida del servidor');
+    } catch (error: any) {
+      if (error.response?.data?.detail) {
+        throw new Error(error.response.data.detail);
+      }
+      throw new Error('Error al actualizar la contraseña');
+    }
+  },
+
+  getProfile: async () => {
+    return await api.get('/users/profile');
   }
 }; 
