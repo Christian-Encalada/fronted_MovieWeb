@@ -46,7 +46,7 @@ export default function LandingPage() {
             transition={{ delay: 0.2 }}
           >
             <span className="inline-block bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
-              CINE IA
+              CineXpress
             </span>
           </motion.h1>
           <motion.p 

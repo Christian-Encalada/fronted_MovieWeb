@@ -50,7 +50,7 @@ export function DashboardNav() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/dashboard/for-you" className="text-xl font-bold">CineAI</Link>
+            <Link href="/dashboard/for-you" className="text-xl font-bold">CineXpress</Link>
             <div className="ml-8 flex space-x-4">
               {navItems.map((item) => (
                 <Link

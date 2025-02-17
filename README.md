@@ -1,7 +1,7 @@
-# CineAI - Sistema de Recomendación de Películas
+# CineXpress - Sistema de Recomendación de Películas
 
 ## 🎬 Descripción
-CineAI es una plataforma moderna de recomendación de películas que utiliza inteligencia artificial para proporcionar sugerencias personalizadas basadas en los gustos del usuario.
+CineXpress es una plataforma moderna de recomendación de películas que utiliza inteligencia artificial para proporcionar sugerencias personalizadas basadas en los gustos del usuario.
 
 ## ✨ Características
 - 🤖 Sistema de recomendación basado en IA
