@@ -1,6 +1,8 @@
 'use client';
 
-import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { TopBar } from '@/components/dashboard/top-bar';
 import { 
@@ -45,9 +47,17 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Redirigir a "Para ti" si estamos en la ruta /dashboard
-  if (typeof window !== 'undefined' && window.location.pathname === '/dashboard') {
-    redirect('/dashboard/for-you');
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (

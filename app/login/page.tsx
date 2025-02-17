@@ -26,46 +26,32 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const theme = useAuth((state) => state.theme);
+  const { setAuth, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Solo limpiar token y user, mantener el tema
-    const theme = localStorage.getItem('theme');
-    localStorage.clear();
-    if (theme) localStorage.setItem('theme', theme);
-  }, []);
+    if (isAuthenticated) {
+      router.push('/dashboard/for-you');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+      const response = await api.post('/users/login', {
+        username,
+        password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Error en el inicio de sesión');
-      }
-
-      // Guarda el token
-      localStorage.setItem('token', data.access_token);
-      console.log('Token guardado:', data.access_token); // Para debugging
-
-      if (data.access_token) {
-        useAuth.getState().setAuth(
-          data.access_token,
-          data.user
-        );
+      if (response.data.access_token && response.data.user) {
+        setAuth(response.data.access_token, response.data.user);
         router.push('/dashboard/for-you');
+      } else {
+        throw new Error('Invalid response format');
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
         description: "Usuario o contraseña incorrectos",
@@ -77,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={`flex items-center justify-center min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`flex items-center justify-center min-h-screen`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

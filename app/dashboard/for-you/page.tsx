@@ -13,9 +13,15 @@ import { useRouter } from 'next/navigation';
 export default function ForYouPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     const fetchRecommendations = async () => {

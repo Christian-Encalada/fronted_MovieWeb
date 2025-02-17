@@ -35,6 +35,23 @@ PELÍCULA #3
 
 ¿Te gustaría que te recomiende más películas similares? 😊`;
 
+// Definir la interfaz para el género
+interface Genre {
+  id: number;
+  name: string;
+}
+
+// Definir la interfaz para los detalles de la película
+interface MovieDetails {
+  id: number;
+  title: string;
+  poster_path: string | null;
+  overview: string | null;
+  vote_average: number;
+  genres: Genre[];
+  release_date: string;
+}
+
 async function searchMovieInTMDB(title: string) {
   try {
     // Primero buscamos la película
@@ -59,16 +76,17 @@ async function searchMovieInTMDB(title: string) {
     const movieDetails = await detailsResponse.json();
 
     // Adaptamos la estructura para que coincida con nuestra interfaz Movie
-    return {
+    const formattedMovie = {
       movie_id: movieDetails.id,
       title: movieDetails.title,
       poster_path: movieDetails.poster_path,
       overview: movieDetails.overview,
       vote_average: movieDetails.vote_average,
-      // Convertimos el array de géneros a string separado por |
-      genres: movieDetails.genres.map(g => g.name).join('|'),
+      genres: movieDetails.genres.map((g: Genre) => g.name).join('|'),
       release_date: movieDetails.release_date
     };
+
+    return formattedMovie;
   } catch (error) {
     console.error('Error buscando en TMDB:', error);
     return null;

@@ -1,34 +1,28 @@
 import axios from 'axios';
-import { useAuth } from '@/hooks/use-auth';
 import { config } from './config';
 
 const api = axios.create({
-  baseURL: config.apiUrl,
+  baseURL: config.apiUrl || 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 });
 
-// Interceptor para agregar el token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
-// Interceptor para manejar errores
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      useAuth.getState().logout();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

@@ -1,5 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { dynamic, runtime, fetchCache, revalidate } from "@/lib/utils";
 import { useState } from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ProfileInfo } from "@/components/profile/profile-info";
@@ -13,7 +17,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("info");
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
 
   const tabs = [
     { id: "info", label: "Información Personal", icon: User, component: ProfileInfo },

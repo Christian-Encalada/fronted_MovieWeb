@@ -12,13 +12,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from '@/hooks/use-auth';
 
 export function TopBar() {
+  const { logout, user } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/');
+    logout();
   };
 
   return (
@@ -58,7 +59,7 @@ export function TopBar() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
-                Cerrar Sesión
+                <span>Cerrar Sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
