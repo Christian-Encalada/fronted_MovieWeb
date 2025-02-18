@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,14 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
   const { toast } = useToast();
+  const { setAuth, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard/for-you');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,12 +44,17 @@ export default function LoginPage() {
         password,
       });
 
-      await login(response.data.access_token, response.data.user);
-      router.push('/dashboard');
-    } catch (error: any) {
+      if (response.data.access_token && response.data.user) {
+        setAuth(response.data.access_token, response.data.user);
+        router.push('/dashboard/for-you');
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Error al iniciar sesión",
+        description: "Usuario o contraseña incorrectos",
         variant: "destructive",
       });
     } finally {
@@ -52,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800">
+    <div className={`flex items-center justify-center min-h-screen`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

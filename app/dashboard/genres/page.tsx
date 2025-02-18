@@ -2,129 +2,188 @@
 
 import { useEffect, useState } from 'react';
 import { Movie } from '@/services/movie.service';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Pagination } from '@/components/ui/pagination';
-import { Badge } from '@/components/ui/badge';
-import api from '@/lib/axios';
+import { MovieCard } from '@/components/movie-card';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
 
-const ITEMS_PER_PAGE = 12;
 const GENRES = [
-  "Action", "Adventure", "Animation", "Children", "Comedy", "Crime",
-  "Documentary", "Drama", "Fantasy", "Film-Noir", "Horror", "Musical",
-  "Mystery", "Romance", "Sci-Fi", "Thriller", "War", "Western"
+  { id: 28, name: "Acción" },
+  { id: 12, name: "Aventura" },
+  { id: 16, name: "Animación" },
+  { id: 35, name: "Comedia" },
+  { id: 80, name: "Crimen" },
+  { id: 99, name: "Documental" },
+  { id: 18, name: "Drama" },
+  { id: 10751, name: "Familia" },
+  { id: 14, name: "Fantasía" },
+  { id: 36, name: "Historia" },
+  { id: 27, name: "Terror" },
+  { id: 10402, name: "Música" },
+  { id: 9648, name: "Misterio" },
+  { id: 10749, name: "Romance" },
+  { id: 878, name: "Ciencia ficción" },
+  { id: 53, name: "Suspense" },
+  { id: 10752, name: "Bélica" },
+  { id: 37, name: "Western" }
 ];
 
 export default function GenresPage() {
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [selectedGenre, setSelectedGenre] = useState<{ id: number; name: string } | null>(null);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const { toast } = useToast();
 
-  // Determinar si mostrar géneros o películas
-  const items = selectedGenre ? movies : GENRES;
-  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-  const currentItems = items.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const loadMoviesByGenre = async (genreId: number, page: number = 1) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/movies/genre/${genreId}?page=${page}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
 
-  useEffect(() => {
-    const loadMovies = async () => {
-      if (!selectedGenre) return;
-      
-      setLoading(true);
-      try {
-        const { data } = await api.get<Movie[]>(`/movies/genre/${selectedGenre}`);
-        setMovies(data);
-        setCurrentPage(1); // Reset a la primera página al cambiar de género
-      } catch (error) {
-        console.error('Error loading movies:', error);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error('Error al cargar películas');
       }
-    };
 
-    loadMovies();
-  }, [selectedGenre]);
-
-  const handleGenreClick = (genre: string) => {
-    setSelectedGenre(genre);
+      const data = await response.json();
+      setMovies(data);
+      setCurrentPage(page);
+      setTotalPages(Math.ceil(100 / 20)); // 20 películas por página
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar las películas",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleBack = () => {
-    setSelectedGenre(null);
+  const handleGenreSelect = (genre: typeof GENRES[0]) => {
+    setSelectedGenre(genre);
     setMovies([]);
     setCurrentPage(1);
+    loadMoviesByGenre(genre.id, 1);
   };
 
-  if (loading) {
+  const handlePageChange = (page: number) => {
+    if (selectedGenre && !loading) {
+      setCurrentPage(page);
+      loadMoviesByGenre(selectedGenre.id, page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Función para generar el rango de páginas a mostrar
+  const getPageRange = () => {
+    const range = [];
+    const maxPagesToShow = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let end = Math.min(totalPages, start + maxPagesToShow - 1);
+
+    if (end - start + 1 < maxPagesToShow) {
+      start = Math.max(1, end - maxPagesToShow + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  };
+
+  // Renderizar la lista de géneros
+  if (!selectedGenre) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p>Cargando...</p>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-6">Explorar por Género</h1>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {GENRES.map((genre) => (
+            <Card 
+              key={genre.id}
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => handleGenreSelect(genre)}
+            >
+              <CardHeader>
+                <CardTitle className="text-center text-base">{genre.name}</CardTitle>
+              </CardHeader>
+            </Card>
+          ))}
         </div>
       </div>
     );
   }
 
+  // Renderizar las películas del género seleccionado
   return (
     <div className="container mx-auto p-4">
-      {selectedGenre ? (
-        <>
-          <div className="flex items-center mb-6">
-            <button
-              onClick={handleBack}
-              className="text-sm text-blue-600 hover:text-blue-800 mr-4"
-            >
-              ← Volver a géneros
-            </button>
-            <h1 className="text-2xl font-bold">Películas de {selectedGenre}</h1>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-            {(currentItems as Movie[]).map((movie) => (
-              <Card key={movie.movie_id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-lg">{movie.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-1">
-                    {movie.genres.split('|').map((genre) => (
-                      <Badge key={genre} variant="outline" className="text-xs">
-                        {genre.trim()}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </>
+      <div className="flex items-center gap-4 mb-6">
+        <Button 
+          variant="ghost" 
+          onClick={() => setSelectedGenre(null)}
+          className="gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver a géneros
+        </Button>
+        <h1 className="text-2xl font-bold">Películas de {selectedGenre.name}</h1>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
       ) : (
         <>
-          <h1 className="text-2xl font-bold mb-6">Explorar por Género</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-            {(currentItems as string[]).map((genre) => (
-              <Card 
-                key={genre}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleGenreClick(genre)}
-              >
-                <CardHeader>
-                  <CardTitle className="text-center">{genre}</CardTitle>
-                </CardHeader>
-              </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {movies.map((movie) => (
+              <MovieCard 
+                key={movie.movie_id} 
+                movie={movie}
+                variant="compact"
+              />
             ))}
           </div>
-        </>
-      )}
 
-      {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+          {/* Paginación */}
+          <div className="flex justify-center gap-2 mt-8">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1 || loading}
+            >
+              Anterior
+            </Button>
+
+            {getPageRange().map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                onClick={() => handlePageChange(page)}
+                disabled={loading}
+              >
+                {page}
+              </Button>
+            ))}
+
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages || loading}
+            >
+              Siguiente
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
