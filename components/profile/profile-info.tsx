@@ -55,47 +55,47 @@ export function ProfileInfo() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-3xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Información Personal</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl md:text-2xl">Información Personal</CardTitle>
+          <CardDescription className="text-sm md:text-base">
             Gestiona tu información personal y cómo se muestra en la plataforma.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <Avatar className="h-20 w-20 md:h-24 md:w-24">
               <AvatarImage src="/placeholder-avatar.jpg" />
               <AvatarFallback>{user?.username?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-          </div>
-          
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm">Nombre de usuario</h4>
-              <p className="text-2xl">{user?.username}</p>
-            </div>
             
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm">Email</h4>
-              <p className="text-2xl">{user?.email}</p>
+            <div className="flex-1 space-y-4 text-center md:text-left">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Nombre de usuario</h4>
+                <p className="text-xl md:text-2xl">{user?.username}</p>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Email</h4>
+                <p className="text-xl md:text-2xl break-all">{user?.email}</p>
+              </div>
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm">Miembro desde</h4>
-              <p className="text-muted-foreground">
-                {formattedDate}
-              </p>
-            </div>
+          <div className="pt-4 border-t">
+            <h4 className="font-medium text-sm">Miembro desde</h4>
+            <p className="text-muted-foreground mt-1">
+              {formattedDate}
+            </p>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Editar Información</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl md:text-2xl">Editar Información</CardTitle>
+          <CardDescription className="text-sm md:text-base">
             Actualiza tu información personal
           </CardDescription>
         </CardHeader>
@@ -109,6 +109,7 @@ export function ProfileInfo() {
                   value={formData.username}
                   onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                   placeholder="Tu nombre de usuario"
+                  className="w-full"
                 />
               </div>
               
@@ -120,11 +121,12 @@ export function ProfileInfo() {
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="tu@email.com"
+                  className="w-full"
                 />
               </div>
             </div>
 
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" className="w-full md:w-auto" disabled={isLoading}>
               {isLoading ? "Actualizando..." : "Guardar cambios"}
             </Button>
           </form>

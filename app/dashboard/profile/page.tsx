@@ -38,9 +38,14 @@ export default function ProfilePage() {
 
   return (
     <div className="h-[calc(100vh-4rem)]">
-      <ResizablePanelGroup direction="horizontal">
+      <ResizablePanelGroup direction="horizontal" className="min-h-[400px]">
         {/* Panel de navegación */}
-        <ResizablePanel defaultSize={25} minSize={20} maxSize={30}>
+        <ResizablePanel
+          defaultSize={25}
+          minSize={20}
+          maxSize={30}
+          className="hidden md:block" // Ocultar en móvil
+        >
           <div className="flex h-full flex-col">
             <div className="p-6">
               <h2 className="text-lg font-semibold">Configuración de Perfil</h2>
@@ -73,12 +78,33 @@ export default function ProfilePage() {
           </div>
         </ResizablePanel>
 
-        <ResizableHandle withHandle />
+        {/* Navegación móvil */}
+        <div className="md:hidden w-full overflow-x-auto">
+          <div className="flex p-2 gap-2">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <Button
+                  key={tab.id}
+                  variant={activeTab === tab.id ? "secondary" : "ghost"}
+                  className={cn(
+                    "flex-shrink-0",
+                    activeTab === tab.id && "bg-secondary"
+                  )}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  <Icon className="h-4 w-4 mr-2" />
+                  <span className="whitespace-nowrap">{tab.label}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Panel de contenido */}
-        <ResizablePanel defaultSize={75}>
+        <ResizablePanel defaultSize={75} className="min-h-[calc(100vh-8rem)]">
           <ScrollArea className="h-full">
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               <CurrentComponent />
             </div>
           </ScrollArea>
