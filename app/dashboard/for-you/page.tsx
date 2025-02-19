@@ -29,7 +29,7 @@ export default function ForYouPage() {
         const token = localStorage.getItem('token'); // Obtén el token directamente
         console.log("Token en frontend:", token?.substring(0, 20)); // Debug
 
-        const response = await fetch('http://localhost:8000/movies/recommendations/user', {
+        const response = await fetch('https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/movies/recommendations/user', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

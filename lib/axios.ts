@@ -2,7 +2,7 @@ import axios from 'axios';
 import { config } from './config';
 
 const api = axios.create({
-  baseURL: config.apiUrl || 'http://localhost:8000',
+  baseURL: config.apiUrl || 'https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net',
   headers: {
     'Content-Type': 'application/json',
   },
