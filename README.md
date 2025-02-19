@@ -40,7 +40,7 @@ npm install
 3. Configura las variables de entorno:
 Crea un archivo `.env.local` con las siguientes variables:
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net
 NEXT_PUBLIC_TMDB_API_KEY=tu_api_key_de_tmdb
 ```
 

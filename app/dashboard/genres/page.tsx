@@ -41,7 +41,7 @@ export default function GenresPage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:8000/movies/genre/${genreId}?page=${page}`,
+        `https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/movies/genre/${genreId}?page=${page}`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`

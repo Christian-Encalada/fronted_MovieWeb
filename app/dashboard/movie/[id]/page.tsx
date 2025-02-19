@@ -22,7 +22,7 @@ export default function MovieDetailPage() {
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/movies/${params.id}`, {
+        const response = await fetch(`https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/movies/${params.id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

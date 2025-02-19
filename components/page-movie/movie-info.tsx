@@ -58,7 +58,7 @@ export function MovieInfo({ movie, isFavorite, onFavoriteChange, isAuthenticated
   const handleTrailerClick = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/movies/${movie.movie_id}/videos`,
+        `https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/movies/${movie.movie_id}/videos`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`

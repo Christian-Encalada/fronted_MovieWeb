@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { TopBar } from '@/components/dashboard/top-bar';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { 
   MessageSquareText, 
   Home, 
@@ -12,8 +16,16 @@ import {
   Layers, 
   Heart 
 } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
-const navigationItems = [
+interface NavigationItem {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+  className?: string;
+}
+
+const navigationItems: NavigationItem[] = [
   {
     title: "Para Ti",
     href: "/dashboard/for-you",
@@ -49,6 +61,8 @@ export default function DashboardLayout({
 }) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const isProfilePage = pathname.includes('/profile');
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -62,12 +76,18 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <TopBar />
+      <TopBar navigationItems={navigationItems} />
       <div className="flex h-[calc(100vh-4rem)]">
-        <div className="hidden md:block w-64 fixed h-[calc(100vh-4rem)]">
-          <Sidebar navigationItems={navigationItems} />
-        </div>
-        <main className="md:pl-64 flex-1 overflow-y-auto">
+        {!isProfilePage && (
+          <div className="hidden md:block w-64 fixed h-[calc(100vh-4rem)]">
+            <Sidebar navigationItems={navigationItems} />
+          </div>
+        )}
+
+        <main className={cn(
+          "flex-1 w-full overflow-y-auto",
+          !isProfilePage && "md:pl-64"
+        )}>
           <div className="container mx-auto p-4">
             {children}
           </div>

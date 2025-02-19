@@ -130,7 +130,7 @@ export async function POST(req: Request) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'HTTP-Referer': 'http://localhost:3000',
+        'HTTP-Referer': 'https://fronted-movie-web.vercel.app',
         'X-Title': 'Movie Recommendations App'
       },
       body: JSON.stringify({

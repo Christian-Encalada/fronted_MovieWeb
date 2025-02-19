@@ -2,7 +2,7 @@ import axios from 'axios';
 import { config } from './config';
 
 const api = axios.create({
-  baseURL: config.apiUrl || 'http://localhost:8000',
+  baseURL: config.apiUrl || 'https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -19,6 +19,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.error('Error en la petición:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      config: error.config
+    });
+
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');

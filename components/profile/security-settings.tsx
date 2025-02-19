@@ -46,7 +46,7 @@ export function SecuritySettings() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/users/password', {
+      const response = await fetch('https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/users/password', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

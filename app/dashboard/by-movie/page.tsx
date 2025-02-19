@@ -29,7 +29,7 @@ export default function ByMoviePage() {
       setLoading(true);
       try {
         const response = await fetch(
-          `http://localhost:8000/movies/search?term=${encodeURIComponent(debouncedSearch)}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/movies/search?term=${encodeURIComponent(debouncedSearch)}`,
           {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`

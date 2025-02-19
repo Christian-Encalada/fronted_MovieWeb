@@ -37,24 +37,25 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    
     try {
       const response = await api.post('/users/login', {
-        username,
-        password,
+        username: username,
+        password: password,
       });
 
-      if (response.data.access_token && response.data.user) {
+      if (response.data.access_token) {
         setAuth(response.data.access_token, response.data.user);
-        router.push('/dashboard/for-you');
-      } else {
-        throw new Error('Invalid response format');
+        router.push('/dashboard');
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (error: any) {
+      console.error('Error completo:', error);
+      const errorMessage = error.response?.data?.detail || 
+                          error.message || 
+                          'Error al iniciar sesión';
       toast({
         title: "Error",
-        description: "Usuario o contraseña incorrectos",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

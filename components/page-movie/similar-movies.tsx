@@ -17,7 +17,7 @@ export function SimilarMovies({ movieId }: SimilarMoviesProps) {
   useEffect(() => {
     const fetchSimilarMovies = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/movies/${movieId}/similar`, {
+        const response = await fetch(`https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/movies/${movieId}/similar`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
