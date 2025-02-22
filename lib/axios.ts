@@ -12,7 +12,8 @@ const api = axios.create({
   },
   // Agregar timeout para evitar peticiones infinitas
   timeout: 10000,
-  withCredentials: true  // Importante para CORS con credenciales
+  // Comentamos temporalmente para probar
+  // withCredentials: true
 });
 
 api.interceptors.request.use((config) => {

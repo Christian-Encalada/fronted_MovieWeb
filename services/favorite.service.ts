@@ -8,7 +8,7 @@ export const FavoriteService = {
       if (skip !== undefined) params.append('skip', skip.toString());
       if (limit !== undefined) params.append('limit', limit.toString());
 
-      const response = await api.get<Movie[]>('/', { params });
+      const response = await api.get<Movie[]>('/favorites/favorites/', { params });
       return response.data;
     } catch (error) {
       console.error('Error getting favorites:', error);
@@ -38,7 +38,7 @@ export const FavoriteService = {
 
   async checkFavorite(movieId: number) {
     try {
-      const response = await api.get(`/check/${movieId}`);
+      const response = await api.get(`/favorites/favorites/check/${movieId}`);
       return response.data.isFavorite;
     } catch (error) {
       console.error('Error checking favorite:', error);
