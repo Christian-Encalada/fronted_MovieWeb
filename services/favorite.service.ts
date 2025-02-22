@@ -8,7 +8,7 @@ export const FavoriteService = {
       if (skip !== undefined) params.append('skip', skip.toString());
       if (limit !== undefined) params.append('limit', limit.toString());
 
-      const response = await api.get<Movie[]>('/favorites', { params });
+      const response = await api.get<Movie[]>('/favorites/favorites/', { params });
       return response.data;
     } catch (error) {
       console.error('Error getting favorites:', error);
@@ -18,7 +18,7 @@ export const FavoriteService = {
 
   async addToFavorites(movieId: number) {
     try {
-      const response = await api.post(`/favorites/${movieId}`);
+      const response = await api.post(`/favorites/favorites/${movieId}`);
       return response.data;
     } catch (error) {
       console.error('Error adding to favorites:', error);
@@ -28,7 +28,7 @@ export const FavoriteService = {
 
   async removeFromFavorites(movieId: number) {
     try {
-      const response = await api.delete(`/favorites/${movieId}`);
+      const response = await api.delete(`/favorites/favorites/${movieId}`);
       return response.data;
     } catch (error) {
       console.error('Error removing from favorites:', error);
@@ -38,7 +38,7 @@ export const FavoriteService = {
 
   async checkFavorite(movieId: number) {
     try {
-      const response = await api.get(`/favorites/check/${movieId}`);
+      const response = await api.get(`/favorites/favorites/check/${movieId}`);
       return response.data.isFavorite;
     } catch (error) {
       console.error('Error checking favorite:', error);
@@ -48,7 +48,7 @@ export const FavoriteService = {
 
   async clearFavorites(): Promise<boolean> {
     try {
-      await api.delete('/favorites');
+      await api.delete('/favorites/favorites/');
       return true;
     } catch (error) {
       console.error('Error clearing favorites:', error);
