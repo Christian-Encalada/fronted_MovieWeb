@@ -6,7 +6,7 @@ interface PasswordChange {
 export const profileService = {
   changePassword: async (passwordData: PasswordChange): Promise<boolean> => {
     try {
-      const response = await fetch('/api/profile/change-password', {
+      const response = await fetch('/profile/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

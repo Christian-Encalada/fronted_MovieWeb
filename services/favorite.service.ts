@@ -1,5 +1,7 @@
-import api from '@/lib/axios';
+import axios from 'axios';
 import { Movie } from './movie.service';
+
+const API_URL = 'https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/';
 
 export const FavoriteService = {
   async getFavorites(skip?: number, limit?: number): Promise<Movie[]> {
@@ -8,7 +10,12 @@ export const FavoriteService = {
       if (skip !== undefined) params.append('skip', skip.toString());
       if (limit !== undefined) params.append('limit', limit.toString());
 
-      const response = await api.get<Movie[]>('/favorites/favorites/', { params });
+      const response = await axios.get(`${API_URL}/favorites/favorites`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        params
+      });
       return response.data;
     } catch (error) {
       console.error('Error getting favorites:', error);
@@ -18,7 +25,7 @@ export const FavoriteService = {
 
   async addToFavorites(movieId: number) {
     try {
-      const response = await api.post(`/favorites/favorites/${movieId}`);
+      const response = await axios.post(`${API_URL}/favorites/favorites/${movieId}`);
       return response.data;
     } catch (error) {
       console.error('Error adding to favorites:', error);
@@ -28,7 +35,7 @@ export const FavoriteService = {
 
   async removeFromFavorites(movieId: number) {
     try {
-      const response = await api.delete(`/favorites/favorites/${movieId}`);
+      const response = await axios.delete(`${API_URL}/favorites/favorites/${movieId}`);
       return response.data;
     } catch (error) {
       console.error('Error removing from favorites:', error);
@@ -38,7 +45,7 @@ export const FavoriteService = {
 
   async checkFavorite(movieId: number) {
     try {
-      const response = await api.get(`/favorites/favorites/check/${movieId}`);
+      const response = await axios.get(`${API_URL}/favorites/favorites/check/${movieId}`);
       return response.data.isFavorite;
     } catch (error) {
       console.error('Error checking favorite:', error);
@@ -48,7 +55,7 @@ export const FavoriteService = {
 
   async clearFavorites(): Promise<boolean> {
     try {
-      await api.delete('/favorites/favorites/');
+      await axios.delete(`${API_URL}/favorites/favorites/`);
       return true;
     } catch (error) {
       console.error('Error clearing favorites:', error);
