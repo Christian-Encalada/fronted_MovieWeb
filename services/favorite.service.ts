@@ -1,23 +1,34 @@
-import axios from 'axios';
+import api from '@/lib/axios';
 import { Movie } from './movie.service';
-
-const API_URL = 'https://fastapi-backend-fghrfmdeegdydydd.canadacentral-01.azurewebsites.net/';
 
 export const FavoriteService = {
   async getFavorites(skip?: number, limit?: number): Promise<Movie[]> {
     try {
-      const params = new URLSearchParams();
-      if (skip !== undefined) params.append('skip', skip.toString());
-      if (limit !== undefined) params.append('limit', limit.toString());
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.warn('No token found, user might not be authenticated');
+        return [];
+      }
 
-      const response = await axios.get(`${API_URL}/favorites/favorites`, {
+      const params = new URLSearchParams();
+      if (typeof skip === 'number' && skip >= 0) params.append('skip', skip.toString());
+      if (typeof limit === 'number' && limit > 0) params.append('limit', limit.toString());
+
+      // Corregimos la ruta según el Swagger
+      const response = await api.get('/favorites/', {
+        params,
         headers: {
-          'Content-Type': 'application/json',
-        },
-        params
+          Authorization: `Bearer ${token}`
+        }
       });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        console.error('Usuario no autorizado. Por favor, inicie sesión nuevamente.');
+        // Opcional: redirigir al login
+        window.location.href = '/login';
+        return [];
+      }
       console.error('Error getting favorites:', error);
       return [];
     }
@@ -25,7 +36,8 @@ export const FavoriteService = {
 
   async addToFavorites(movieId: number) {
     try {
-      const response = await axios.post(`${API_URL}/favorites/favorites/${movieId}`);
+      // Ruta según el Swagger: /favorites/{movie_id}
+      const response = await api.post(`/favorites/${movieId}`);
       return response.data;
     } catch (error) {
       console.error('Error adding to favorites:', error);
@@ -35,7 +47,8 @@ export const FavoriteService = {
 
   async removeFromFavorites(movieId: number) {
     try {
-      const response = await axios.delete(`${API_URL}/favorites/favorites/${movieId}`);
+      // Ruta según el Swagger: /favorites/{movie_id}
+      const response = await api.delete(`/favorites/${movieId}`);
       return response.data;
     } catch (error) {
       console.error('Error removing from favorites:', error);
@@ -45,7 +58,8 @@ export const FavoriteService = {
 
   async checkFavorite(movieId: number) {
     try {
-      const response = await axios.get(`${API_URL}/favorites/favorites/check/${movieId}`);
+      // Ruta según el Swagger: /favorites/check/{movie_id}
+      const response = await api.get(`/favorites/check/${movieId}`);
       return response.data.isFavorite;
     } catch (error) {
       console.error('Error checking favorite:', error);
@@ -55,11 +69,12 @@ export const FavoriteService = {
 
   async clearFavorites(): Promise<boolean> {
     try {
-      await axios.delete(`${API_URL}/favorites/favorites/`);
+      // Ruta según el Swagger: /favorites/
+      await api.delete('/favorites/');
       return true;
     } catch (error) {
       console.error('Error clearing favorites:', error);
       throw error;
     }
   }
-}; 
+};

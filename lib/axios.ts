@@ -6,25 +6,38 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fastapi-backend-fghr
 const secureApiUrl = API_URL.replace('http://', 'https://');
 
 const api = axios.create({
-  baseURL: `${secureApiUrl}/api`,
+  baseURL: secureApiUrl,
   headers: {
     'Content-Type': 'application/json',
   },
-  // Agregar timeout para evitar peticiones infinitas
   timeout: 10000,
-  // Comentamos temporalmente para probar
-  // withCredentials: true
+  // Importante para CORS
+  withCredentials: true
 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  
   // Asegurarnos de que todas las URLs usen HTTPS
   if (config.url && config.url.startsWith('http://')) {
     config.url = config.url.replace('http://', 'https://');
   }
+
+  // Asegurarnos de que el token se envíe correctamente
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    console.warn('No token found in localStorage');
+  }
+
+  // Log de la petición para debugging
+  console.log('Request:', {
+    url: config.url,
+    method: config.method,
+    headers: config.headers,
+    params: config.params
+  });
+
   return config;
 }, (error) => {
   console.error('Error en la configuración de la petición:', error);
@@ -34,19 +47,25 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Mejorar el logging de errores
     if (error.response) {
-      // La petición fue hecha y el servidor respondió con un código de estado
       console.error('Error de respuesta:', {
         status: error.response.status,
         data: error.response.data,
         headers: error.response.headers,
+        config: {
+          url: error.config.url,
+          method: error.config.method,
+          headers: error.config.headers,
+          params: error.config.params
+        }
       });
+
+      if (error.response.status === 422) {
+        console.error('Detalles de validación:', error.response.data);
+      }
     } else if (error.request) {
-      // La petición fue hecha pero no se recibió respuesta
       console.error('Error de petición:', error.request);
     } else {
-      // Algo sucedió en la configuración de la petición
       console.error('Error:', error.message);
     }
 
