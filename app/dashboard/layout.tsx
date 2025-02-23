@@ -60,18 +60,28 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { isAuthenticated } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
   const isProfilePage = pathname.includes('/profile');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/login');
+      } else {
+        setIsLoading(false);
+      }
+    };
 
-  if (!isAuthenticated) {
-    return null;
+    checkAuth();
+  }, [router]);
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
   }
 
   return (
@@ -83,14 +93,11 @@ export default function DashboardLayout({
             <Sidebar navigationItems={navigationItems} />
           </div>
         )}
-
         <main className={cn(
           "flex-1 w-full overflow-y-auto",
           !isProfilePage && "md:pl-64"
         )}>
-          <div className="container mx-auto p-4">
-            {children}
-          </div>
+          {children}
         </main>
       </div>
     </div>
