@@ -7,6 +7,7 @@ import { ArrowRight, Brain, Film, Heart, Sparkles, Star, ThumbsUp, Users } from 
 import { useRef } from "react";
 import { FeaturedMovies } from "@/components/featured-movies";
 import { useAuth } from '@/hooks/use-auth';
+import { ThemeToggleMinimal } from '@/components/theme-toggle-minimal';
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -47,140 +48,143 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background/90 to-secondary/20">
-      {/* Hero Section con Parallax */}
-      <section ref={targetRef} className="relative h-screen flex items-center justify-center overflow-hidden">
-        <motion.div
-          style={{ opacity, scale, position }}
-          className="container px-4 mx-auto text-center z-10"
-        >
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500"
-          >
-            CineXpress
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-2xl md:text-3xl font-semibold mb-4"
-          >
-            Descubre tu próxima película favorita
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-          >
-            Recomendaciones personalizadas impulsadas por IA para una experiencia cinematográfica única
-          </motion.p>
+    <>
+      <ThemeToggleMinimal />
+      <div className="min-h-screen bg-gradient-to-b from-background via-background/90 to-secondary/20">
+        {/* Hero Section con Parallax */}
+        <section ref={targetRef} className="relative h-screen flex items-center justify-center overflow-hidden">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex gap-4 justify-center"
+            style={{ opacity, scale, position }}
+            className="container px-4 mx-auto text-center z-10"
           >
-            <Button
-              size="lg"
-              onClick={() => router.push('/login')}
-              className="bg-gradient-to-r from-primary to-purple-500 hover:from-primary/80 hover:to-purple-500/80"
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500"
             >
-              Comenzar ahora
-              <ArrowRight className="ml-2" />
-            </Button>
+              CineXpress
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-2xl md:text-3xl font-semibold mb-4"
+            >
+              Descubre tu próxima película favorita
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+            >
+              Recomendaciones personalizadas impulsadas por IA para una experiencia cinematográfica única
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex gap-4 justify-center"
+            >
+              <Button
+                size="lg"
+                onClick={() => router.push('/login')}
+                className="bg-gradient-to-r from-primary to-purple-500 hover:from-primary/80 hover:to-purple-500/80"
+              >
+                Comenzar ahora
+                <ArrowRight className="ml-2" />
+              </Button>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      </section>
+        </section>
 
-      {/* Características */}
-      <section className="py-20 bg-background/50 backdrop-blur-lg">
-        <div className="container px-4 mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Características principales</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FeatureCard3D
-              icon={<Brain className="w-8 h-8 text-primary" />}
-              title="IA Avanzada"
-              description="Algoritmos de última generación para recomendaciones precisas"
-            />
-            <FeatureCard3D
-              icon={<Heart className="w-8 h-8 text-primary" />}
-              title="Personalización"
-              description="Recomendaciones adaptadas a tus gustos y preferencias"
-            />
-            <FeatureCard3D
-              icon={<Film className="w-8 h-8 text-primary" />}
-              title="Catálogo Extenso"
-              description="Miles de películas de todos los géneros y épocas"
-            />
+        {/* Características */}
+        <section className="py-20 bg-background/50 backdrop-blur-lg">
+          <div className="container px-4 mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Características principales</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <FeatureCard3D
+                icon={<Brain className="w-8 h-8 text-primary" />}
+                title="IA Avanzada"
+                description="Algoritmos de última generación para recomendaciones precisas"
+              />
+              <FeatureCard3D
+                icon={<Heart className="w-8 h-8 text-primary" />}
+                title="Personalización"
+                description="Recomendaciones adaptadas a tus gustos y preferencias"
+              />
+              <FeatureCard3D
+                icon={<Film className="w-8 h-8 text-primary" />}
+                title="Catálogo Extenso"
+                description="Miles de películas de todos los géneros y épocas"
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Películas Destacadas */}
-      <section className="py-20">
-        <div className="container px-4 mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Películas Destacadas</h2>
-          <FeaturedMovies />
-        </div>
-      </section>
-
-      {/* Cómo funciona */}
-      <section className="py-20 bg-background/50 backdrop-blur-lg">
-        <div className="container px-4 mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Cómo funciona</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <StepCard
-              number={1}
-              title="Crea tu cuenta"
-              description="Regístrate en segundos para comenzar tu experiencia personalizada"
-            />
-            <StepCard
-              number={2}
-              title="Selecciona tus preferencias"
-              description="Indica tus géneros y películas favoritas"
-            />
-            <StepCard
-              number={3}
-              title="Recibe recomendaciones"
-              description="Obtén sugerencias personalizadas basadas en tus gustos"
-            />
+        {/* Películas Destacadas */}
+        <section className="py-20">
+          <div className="container px-4 mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Películas Destacadas</h2>
+            <FeaturedMovies />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* IA Features */}
-      <section className="py-20">
-        <div className="container px-4 mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Potenciado por IA</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <AIFeatureCard
-              icon={<Sparkles className="w-8 h-8 text-primary" />}
-              title="Análisis Inteligente"
-              description="Nuestra IA analiza patrones de visualización para mejorar las recomendaciones"
-            />
-            <AIFeatureCard
-              icon={<Star className="w-8 h-8 text-primary" />}
-              title="Calificación Predictiva"
-              description="Predicciones precisas de qué tanto te gustará una película"
-            />
-            <AIFeatureCard
-              icon={<Users className="w-8 h-8 text-primary" />}
-              title="Recomendaciones Sociales"
-              description="Descubre películas populares entre usuarios con gustos similares"
-            />
-            <AIFeatureCard
-              icon={<ThumbsUp className="w-8 h-8 text-primary" />}
-              title="Mejora Continua"
-              description="El sistema aprende y mejora con cada interacción"
-            />
+        {/* Cómo funciona */}
+        <section className="py-20 bg-background/50 backdrop-blur-lg">
+          <div className="container px-4 mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Cómo funciona</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <StepCard
+                number={1}
+                title="Crea tu cuenta"
+                description="Regístrate en segundos para comenzar tu experiencia personalizada"
+              />
+              <StepCard
+                number={2}
+                title="Selecciona tus preferencias"
+                description="Indica tus géneros y películas favoritas"
+              />
+              <StepCard
+                number={3}
+                title="Recibe recomendaciones"
+                description="Obtén sugerencias personalizadas basadas en tus gustos"
+              />
+            </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+
+        {/* IA Features */}
+        <section className="py-20">
+          <div className="container px-4 mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Potenciado por IA</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <AIFeatureCard
+                icon={<Sparkles className="w-8 h-8 text-primary" />}
+                title="Análisis Inteligente"
+                description="Nuestra IA analiza patrones de visualización para mejorar las recomendaciones"
+              />
+              <AIFeatureCard
+                icon={<Star className="w-8 h-8 text-primary" />}
+                title="Calificación Predictiva"
+                description="Predicciones precisas de qué tanto te gustará una película"
+              />
+              <AIFeatureCard
+                icon={<Users className="w-8 h-8 text-primary" />}
+                title="Recomendaciones Sociales"
+                description="Descubre películas populares entre usuarios con gustos similares"
+              />
+              <AIFeatureCard
+                icon={<ThumbsUp className="w-8 h-8 text-primary" />}
+                title="Mejora Continua"
+                description="El sistema aprende y mejora con cada interacción"
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    </>
   );
 }
 
