@@ -7,13 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Heart, Home, Film, Clapperboard } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
+interface NavigationItem {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+  className?: string;
+}
+
 interface SidebarProps {
-  navigationItems: {
-    title: string;
-    href: string;
-    icon: LucideIcon;
-    className?: string;
-  }[];
+  navigationItems: NavigationItem[];
 }
 
 export function Sidebar({ navigationItems }: SidebarProps) {
